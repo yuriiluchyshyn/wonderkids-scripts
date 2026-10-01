@@ -21,7 +21,7 @@ GIT_NAME="Yurii Luchyshyn"
 GIT_EMAIL="jurilochishin@gmail.com"
 
 # Repositories managed by this project.
-REPOS=("$ROOT/app" "$ROOT/scripts")
+REPOS=("$ROOT/app" "$ROOT/scripts" "$ROOT/server")
 
 pushed_any=0
 for repo in "${REPOS[@]}"; do
