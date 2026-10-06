@@ -41,7 +41,7 @@ else
 fi
 
 # Repositories managed by this project.
-REPOS=("$ROOT/app" "$ROOT/scripts" "$ROOT/server")
+REPOS=("$ROOT/app" "$ROOT/scripts")
 
 pushed_any=0
 for repo in "${REPOS[@]}"; do
