@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="space.css" />
+<style>
+  /* «What is inside»: the recording of the real app in a phone, a caption above it, the closing card.
+     1080×1920 for stories and Reels; ?h=1350 gives the 4:5 cut for feeds. */
+  html, body { width: 1080px; height: var(--h, 1920px); }
+
+  #caption {
+    position: absolute; left: 60px; right: 60px; top: 190px; height: 230px; display: flex; align-items: center;
+    justify-content: center; text-align: center; white-space: pre-line;
+    font-size: 68px; font-weight: 800; letter-spacing: -1.5px; line-height: 1.14;
+    text-shadow: 0 6px 24px rgba(20, 0, 70, 0.6);
+  }
+  #phone {
+    position: absolute; left: 180px; top: 446px; width: 720px; height: 1280px; border-radius: 56px; overflow: hidden;
+    background: #14122b; border: 10px solid #1b1838;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.28), 0 50px 110px rgba(15, 0, 60, 0.7);
+  }
+  /* the recording has a blank strip below the app (1806 of its 1920 rows are the page): cut it off */
+  #phone img { display: block; width: 100%; height: 106.31%; }
+
+  body.feed #caption { top: 26px; height: 170px; font-size: 56px; }
+  body.feed #phone { left: 232px; top: 214px; width: 616px; height: 1096px; border-radius: 48px; }
+
+  #end {
+    position: absolute; inset: var(--top, 270px) 70px var(--bottom, 400px); display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; opacity: 0;
+  }
+  h1 { font-size: 150px; font-weight: 900; letter-spacing: -4px; line-height: 1; }
+  .tag { font-size: 58px; font-weight: 500; margin-top: 34px; }
+  .pill { display: inline-block; margin-top: 50px; padding: 34px 70px; border-radius: 999px; background: #fff; color: #5b21b6; font-weight: 800; font-size: 58px; }
+</style>
+</head>
+<body>
+  <div id="caption"></div>
+  <div id="phone"><img id="frame" alt="" /></div>
+
+  <section id="end">
+    <div id="planet"></div>
+    <h1>Pulsar Kids</h1>
+    <p class="tag">Ігри українською · 4–10 років</p>
+    <span class="pill">pulsarkids.com</span>
+  </section>
+
+  <script src="space.js"></script>
+  <script>
+    // ?frames=<dir>&count=<n>&speed=<x>&cues=<json>[&h=1350] — the recording (see recording/record.mjs),
+    // how many frames it has, how fast to play it and when each caption begins.
+    const query = new URLSearchParams(location.search)
+    const FRAMES = query.get('frames')
+    const COUNT = Number(query.get('count'))
+    const SPEED = Number(query.get('speed'))
+    const CUES = JSON.parse(query.get('cues')).map((cue) => ({ text: cue.text, at: (cue.at * 1000) / SPEED }))
+    const FPS = 30
+    const APP_MS = ((COUNT / FPS) * 1000) / SPEED
+    const FADE = 260
+
+    const height = Number(query.get('h') ?? 1920)
+    const root = document.documentElement.style
+    root.setProperty('--h', `${height}px`)
+    if (height < 1920) { root.setProperty('--top', '40px'); root.setProperty('--bottom', '40px'); document.body.classList.add('feed') }
+    document.getElementById('planet').innerHTML = planet('380px')
+    sky({ dots: 170, sparks: 14, seed: 9, clear: [[10, 8, 90, 92]] })
+
+    const ramp = (value, from, length) => Math.min(1, Math.max(0, (value - from) / length))
+
+    window.seek = async (ms) => {
+      const index = Math.min(COUNT - 1, Math.floor((ms / 1000) * FPS * SPEED))
+      const frame = document.getElementById('frame')
+      const src = `file://${FRAMES}/frame_${String(index).padStart(4, '0')}.jpg`
+      if (frame.dataset.src !== src) {
+        frame.dataset.src = src
+        frame.src = src
+        await frame.decode()
+      }
+      for (const animation of document.getAnimations()) {
+        animation.pause()
+        animation.currentTime = ms
+      }
+
+      const closing = ramp(ms, APP_MS, 350)
+      document.getElementById('phone').style.opacity = 1 - closing
+      document.getElementById('phone').style.transform = `scale(${1 - 0.06 * closing})`
+      document.getElementById('end').style.opacity = ramp(ms, APP_MS + 200, 350)
+
+      let current = 0
+      while (current + 1 < CUES.length && CUES[current + 1].at <= ms) current++
+      const until = current + 1 < CUES.length ? CUES[current + 1].at : APP_MS
+      const caption = document.getElementById('caption')
+      caption.textContent = CUES[current].text
+      caption.style.opacity = Math.min(ramp(ms, CUES[current].at, FADE), 1 - ramp(ms, until - FADE, FADE))
+      caption.style.transform = `translateY(${(1 - ramp(ms, CUES[current].at, FADE)) * 24}px)`
+
+      return new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)))
+    }
+  </script>
+</body>
+</html>

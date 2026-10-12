@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 #
 # Steps 1–2 of the subdomain guide, automated via the Vercel CLI.
-# Adds parents.<domain> and play.<domain> to THIS project and prints the DNS
-# records you then create at your registrar.
+# Adds parents.<domain> and play.<domain> to the GAME's Vercel project (app/game)
+# and prints the DNS records you then create at your registrar. The root domain
+# belongs to the SITE's project (app/site) — see README.md.
 #
 # Prerequisites (one-time, interactive — must be done by you):
 #   1. Log in:      vercel login          (or: export VERCEL_TOKEN=xxxxxxxx)
@@ -23,8 +24,8 @@ TOKEN_ARG=()
 if [ -n "${VERCEL_TOKEN:-}" ]; then TOKEN_ARG=(--token "$VERCEL_TOKEN"); fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-APP_DIR="$(cd "$SCRIPT_DIR/../app" && pwd)"
-cd "$APP_DIR"   # the Vercel project lives in app/ (where vercel.json is)
+APP_DIR="$(cd "$SCRIPT_DIR/../app/game" && pwd)"
+cd "$APP_DIR"   # the game's Vercel project lives in app/game (where its vercel.json is)
 
 echo "👤  Перевіряю вхід у Vercel…"
 # `</dev/null` so that, if credentials are missing, the CLI gets EOF and fails
@@ -37,7 +38,7 @@ fi
 echo "✅  Вхід ок: ${WHOAMI}"
 
 echo ""
-echo "🔗  Прив'язую каталог app/ до Vercel-проєкту (інтерактивно першого разу)…"
+echo "🔗  Прив'язую каталог app/game до Vercel-проєкту гри (інтерактивно першого разу)…"
 vercel link "${TOKEN_ARG[@]}"
 
 # Read the linked project id so we attach domains to THIS project explicitly

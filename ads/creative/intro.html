@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="space.css" />
+<style>
+  /* The 12-second intro video. 1080×1920 for stories and Reels; ?h=1350 gives the 4:5 cut for feeds. */
+  html, body { width: 1080px; height: var(--h, 1920px); }
+
+  /* Stories and Reels cover the top and bottom of a 9:16 picture with their own buttons; a feed does not. */
+  .scene {
+    position: absolute; inset: var(--top, 270px) 70px var(--bottom, 400px); display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; opacity: 0;
+    animation: scene var(--len) linear var(--at) both;
+  }
+  .scene.last { animation-name: sceneStay; }
+  @keyframes scene { 0% { opacity: 0; } 7% { opacity: 1; } 92% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes sceneStay { 0% { opacity: 0; } 12% { opacity: 1; } 100% { opacity: 1; } }
+
+  .pop { opacity: 0; animation: pop 560ms cubic-bezier(0.2, 1.35, 0.4, 1) var(--d) both; }
+  @keyframes pop { from { opacity: 0; transform: translateY(70px) scale(0.86); } to { opacity: 1; transform: none; } }
+  .bob { animation: bob 3000ms ease-in-out infinite alternate both; }
+  @keyframes bob { from { transform: translateY(-16px) rotate(-2deg); } to { transform: translateY(16px) rotate(2deg); } }
+
+  h1 { font-size: 150px; font-weight: 900; letter-spacing: -4px; line-height: 1; }
+  h2 { font-size: 84px; font-weight: 800; letter-spacing: -2px; line-height: 1.1; }
+  .tag { font-size: 58px; font-weight: 500; margin-top: 34px; }
+  .pill { display: inline-block; margin-top: 50px; padding: 34px 70px; border-radius: 999px; background: #fff; color: #5b21b6; font-weight: 800; font-size: 58px; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; width: 100%; margin-top: 60px; }
+  .chip {
+    background: rgba(255, 255, 255, 0.14); border: 3px solid rgba(255, 255, 255, 0.26);
+    border-radius: 44px; padding: 34px 10px 28px; font-size: 39px; font-weight: 700;
+  }
+  .chip .emoji { display: block; font-size: 96px; line-height: 1.1; margin-bottom: 14px; }
+
+  .cards { display: flex; flex-direction: column; gap: 34px; width: 100%; margin-top: 60px; }
+  .card {
+    display: flex; align-items: center; gap: 36px; text-align: left; background: #fff; color: #3b1a78;
+    border-radius: 52px; padding: 44px 50px; font-size: 56px; font-weight: 800; line-height: 1.15;
+    box-shadow: 0 30px 60px rgba(20, 0, 70, 0.45);
+  }
+  .card .emoji { font-size: 104px; flex: none; }
+</style>
+</head>
+<body>
+  <section class="scene" style="--at: 0ms; --len: 3200ms">
+    <div class="pop" style="--d: 100ms"><div class="bob" data-planet="560px"></div></div>
+    <h1 class="pop" style="--d: 450ms">Pulsar Kids</h1>
+    <p class="tag pop" style="--d: 800ms" data-t="tagline"></p>
+  </section>
+
+  <section class="scene" style="--at: 3000ms; --len: 3800ms">
+    <h2 class="pop" style="--d: 3150ms" data-t="games"></h2>
+    <div class="grid">
+      <div class="chip pop" style="--d: 3500ms"><span class="emoji">🧮</span><span data-t="subjects.0"></span></div>
+      <div class="chip pop" style="--d: 3600ms"><span class="emoji">🧩</span><span data-t="subjects.1"></span></div>
+      <div class="chip pop" style="--d: 3700ms"><span class="emoji">🔤</span><span data-t="subjects.2"></span></div>
+      <div class="chip pop" style="--d: 3800ms"><span class="emoji">🌍</span><span data-t="subjects.3"></span></div>
+      <div class="chip pop" style="--d: 3900ms"><span class="emoji">🔭</span><span data-t="subjects.4"></span></div>
+      <div class="chip pop" style="--d: 4000ms"><span class="emoji">🏛️</span><span data-t="subjects.5"></span></div>
+      <div class="chip pop" style="--d: 4100ms"><span class="emoji">♻️</span><span data-t="subjects.6"></span></div>
+      <div class="chip pop" style="--d: 4200ms"><span class="emoji">🌿</span><span data-t="subjects.7"></span></div>
+      <div class="chip pop" style="--d: 4300ms"><span class="emoji">🎨</span><span data-t="subjects.8"></span></div>
+    </div>
+  </section>
+
+  <section class="scene" style="--at: 6600ms; --len: 3300ms">
+    <h2 class="pop" style="--d: 6750ms" data-t="calm"></h2>
+    <div class="cards">
+      <div class="card pop" style="--d: 7100ms"><span class="emoji">🌟</span><span data-t="calmCards.0"></span></div>
+      <div class="card pop" style="--d: 7400ms"><span class="emoji">🚫</span><span data-t="calmCards.1"></span></div>
+      <div class="card pop" style="--d: 7700ms"><span class="emoji">⏳</span><span data-t="calmCards.2"></span></div>
+    </div>
+  </section>
+
+  <section class="scene last" style="--at: 9700ms; --len: 2300ms">
+    <div class="pop" style="--d: 9800ms"><div class="bob" data-planet="380px"></div></div>
+    <h1 class="pop" style="--d: 9950ms">Pulsar Kids</h1>
+    <p class="tag pop" style="--d: 10200ms" data-t="audience"></p>
+    <span class="pill pop" style="--d: 10500ms">pulsarkids.com</span>
+  </section>
+
+  <script src="space.js"></script>
+  <script src="texts.js"></script>
+  <script>
+    fillTexts()
+    const height = Number(new URLSearchParams(location.search).get('h') ?? 1920)
+    const root = document.documentElement.style
+    root.setProperty('--h', `${height}px`)
+    if (height < 1920) { root.setProperty('--top', '40px'); root.setProperty('--bottom', '40px') }
+    for (const el of document.querySelectorAll('[data-planet]')) el.innerHTML = planet(el.dataset.planet)
+    // big stars stay around the edges, off the words
+    sky({ dots: 170, sparks: 70, seed: 5, clear: height < 1920 ? [[7, 6, 93, 94]] : [[7, 13, 93, 81]] })
+
+    // Frame-exact playback: every animation is paused and moved to the asked moment.
+    window.seek = (ms) => {
+      for (const animation of document.getAnimations()) {
+        animation.pause()
+        animation.currentTime = ms
+      }
+      return new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)))
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+{
+  "defaults": {
+    "link": "https://pulsarkids.com/",
+    "image": "../../app/public/og-image.png",
+    "cta": "LEARN_MORE",
+    "objective": "OUTCOME_TRAFFIC",
+    "optimizationGoal": "LINK_CLICKS"
+  },
+  "campaigns": [
+    {
+      "name": "pulsar-parents-ua",
+      "dailyBudget": 5,
+      "audiences": [
+        {
+          "name": "parents-25-45",
+          "countries": ["UA"],
+          "ageMin": 25,
+          "ageMax": 45,
+          "genders": [],
+          "locales": [],
+          "platforms": ["facebook", "instagram"],
+          "criteria": []
+        }
+      ],
+      "ads": [
+        {
+          "name": "learn-by-playing",
+          "headline": "Pulsar Kids — навчальні ігри українською",
+          "message": "Навчальні ігри для дітей 4–10 років: математика, логіка, мови, географія, астрономія. Без програшів і таймерів — дитина вчиться у власному темпі, а екранним часом керуєте ви.",
+          "description": "Для дітей 4–10 років"
+        },
+        {
+          "name": "screen-time",
+          "headline": "Екранний час, який навчає",
+          "message": "Дитина все одно бере до рук телефон — нехай цей час буде корисним. Pulsar Kids: короткі ігри з математики, логіки та мов українською, а скільки грати на день, вирішуєте ви.",
+          "description": "Навчальні ігри українською"
+        }
+      ]
+    }
+  ]
+}

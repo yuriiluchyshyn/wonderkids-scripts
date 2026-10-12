@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="space.css" />
+<style>
+  /* «Play»: the 18-second video — a hook, quick cuts of real games in a phone, a finger on the «Play» button.
+     1080×1920 for stories and Reels; ?h=1350 gives the 4:5 cut for feeds. Words: ?lang=uk|en|pl (texts.js). */
+  html, body { width: 1080px; height: var(--h, 1920px); }
+  .scene {
+    position: absolute; inset: var(--top, 270px) 70px var(--bottom, 400px); display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; opacity: 0;
+  }
+  em { font-style: normal; color: #fde047; }
+
+  /* 1 — the hook */
+  #hook .who { font-size: 250px; line-height: 1; white-space: nowrap; }
+  #hook h2 { margin-top: 56px; font-size: 104px; font-weight: 900; letter-spacing: -3px; line-height: 1.08; text-shadow: 0 8px 30px rgba(20, 0, 70, 0.6); }
+
+  /* 2 — the games */
+  #values { position: absolute; left: 40px; right: 40px; top: 180px; height: 220px; display: flex; flex-wrap: wrap; gap: 18px 20px; align-items: center; justify-content: center; align-content: center; }
+  .value {
+    padding: 20px 38px; border-radius: 999px; background: #fff; color: #4c1d95; font-size: 50px; font-weight: 800; white-space: nowrap;
+    box-shadow: 0 14px 34px rgba(20, 0, 70, 0.45);
+  }
+  .value .emoji { margin-right: 12px; }
+  /* The games fill the upper part of a phone's screen: the phone is cut where they end, so the board is big. */
+  #phone {
+    position: absolute; left: 110px; top: 420px; width: 860px; height: 1140px; border-radius: 56px; overflow: hidden;
+    background: #14122b; border: 10px solid #1b1838;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.28), 0 50px 110px rgba(15, 0, 60, 0.7);
+  }
+  #phone img { display: block; width: 100%; }
+  #flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+  body.feed #values { top: 14px; height: 190px; }
+  body.feed .value { font-size: 42px; padding: 16px 30px; }
+  body.feed #phone { left: 150px; top: 208px; width: 780px; height: 1120px; border-radius: 48px; }
+
+  /* 3 — the call */
+  #cta h2 { font-size: 86px; font-weight: 900; letter-spacing: -2px; line-height: 1.12; text-shadow: 0 8px 30px rgba(20, 0, 70, 0.6); }
+  #button {
+    position: relative; margin-top: 90px; padding: 46px 120px; border-radius: 999px; font-size: 110px; font-weight: 900; color: #1e0a45;
+    background: linear-gradient(135deg, #fde047, #ffb347); box-shadow: 0 0 90px rgba(253, 224, 71, 0.65), 0 26px 50px rgba(20, 0, 70, 0.5);
+  }
+  #ring { position: absolute; inset: -10px; border-radius: 999px; border: 10px solid #fff; opacity: 0; }
+  #finger { position: absolute; left: 50%; top: 100%; font-size: 230px; line-height: 1; margin: -40px 0 0 -40px; filter: drop-shadow(0 16px 24px rgba(20, 0, 70, 0.6)); }
+  #site { margin-top: 250px; font-size: 54px; font-weight: 700; opacity: 0.92; }
+  body.feed #site { margin-top: 210px; }
+</style>
+</head>
+<body>
+  <section class="scene" id="hook">
+    <div class="who emoji">👧📱✨</div>
+    <h2 data-t="hook"></h2>
+  </section>
+
+  <div id="values">
+    <div class="value"><span class="emoji">🎁</span><span data-t="values.0"></span></div>
+    <div class="value"><span class="emoji">💬</span><span data-t="values.1"></span></div>
+    <div class="value"><span class="emoji">🚫</span><span data-t="values.2"></span></div>
+  </div>
+  <div id="phone"><img id="frame" alt="" /><div id="flash"></div></div>
+
+  <section class="scene" id="cta">
+    <h2 data-t="cta"></h2>
+    <div id="button"><span class="emoji">▶️</span> <span data-t="play"></span><div id="ring"></div><div id="finger" class="emoji">👆</div></div>
+    <p id="site">pulsarkids.com</p>
+  </section>
+
+  <script src="space.js"></script>
+  <script src="texts.js"></script>
+  <script>
+    // ?cuts=<dir>&counts=<n,n,…>[&skip=<frames>][&h=1350][&lang=en] — the cuts recorded by recording/cuts.mjs
+    // (<dir>/<n>/frame_0000.jpg…), how many frames each has, and how many of its first frames to leave out.
+    fillTexts()
+    const query = new URLSearchParams(location.search)
+    const CUTS = query.get('cuts')
+    const COUNTS = query.get('counts').split(',').map(Number)
+    const SKIP = Number(query.get('skip') ?? 6)
+    const FPS = 30
+    const HOOK_END = 3000, GAMES_END = 14000, END = 18000
+    const CUT_MS = (GAMES_END - HOOK_END) / COUNTS.length
+
+    const height = Number(query.get('h') ?? 1920)
+    const root = document.documentElement.style
+    root.setProperty('--h', `${height}px`)
+    if (height < 1920) { root.setProperty('--top', '40px'); root.setProperty('--bottom', '40px'); document.body.classList.add('feed') }
+    sky({ dots: 170, sparks: 40, seed: 9, clear: height < 1920 ? [[7, 6, 93, 94]] : [[7, 13, 93, 81]] })
+
+    const $ = (id) => document.getElementById(id)
+    const ramp = (value, from, length) => Math.min(1, Math.max(0, (value - from) / length))
+    /** Overshoots a little on the way in, like a thing that pops up. */
+    const pop = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : 1 + 2.2 * Math.pow(t - 1, 3) + 1.2 * Math.pow(t - 1, 2))
+    const values = [...document.querySelectorAll('.value')]
+
+    window.seek = async (ms) => {
+      // 1 — the hook: the picture pops in, the words rise, all of it leaves for the games
+      const hook = $('hook')
+      hook.style.opacity = Math.min(ramp(ms, 0, 250), 1 - ramp(ms, HOOK_END - 300, 300))
+      hook.querySelector('.who').style.transform = `scale(${0.6 + 0.4 * pop(ramp(ms, 0, 520))}) rotate(${Math.sin(ms / 420) * 3}deg)`
+      hook.querySelector('h2').style.transform = `translateY(${(1 - pop(ramp(ms, 220, 520))) * 90}px)`
+      hook.querySelector('h2').style.opacity = ramp(ms, 220, 300)
+
+      // 2 — the games: one cut after another, a white blink between them, the three promises above
+      const playing = ms >= HOOK_END - 200 && ms < GAMES_END + 300
+      const phone = $('phone')
+      const inOut = Math.min(ramp(ms, HOOK_END - 200, 380), 1 - ramp(ms, GAMES_END, 300))
+      phone.style.opacity = inOut
+      phone.style.transform = `translateY(${(1 - pop(ramp(ms, HOOK_END - 200, 520))) * 160}px) scale(${1 - 0.06 * ramp(ms, GAMES_END, 300)})`
+      if (playing) {
+        const local = Math.min(GAMES_END - 1, Math.max(HOOK_END, ms)) - HOOK_END
+        const cut = Math.min(COUNTS.length - 1, Math.floor(local / CUT_MS))
+        const index = Math.min(COUNTS[cut] - 1, SKIP + Math.floor(((local - cut * CUT_MS) / 1000) * FPS))
+        const src = `file://${CUTS}/${cut}/frame_${String(index).padStart(4, '0')}.jpg`
+        const frame = $('frame')
+        if (frame.dataset.src !== src) {
+          frame.dataset.src = src
+          frame.src = src
+          await frame.decode()
+        }
+        const sinceCut = local - cut * CUT_MS
+        $('flash').style.opacity = cut > 0 ? 0.7 * (1 - ramp(sinceCut, 0, 170)) : 0
+      }
+      values.forEach((value, i) => {
+        const at = HOOK_END + 250 + i * 1500
+        value.style.opacity = Math.min(ramp(ms, at, 220), 1 - ramp(ms, GAMES_END - 100, 300))
+        value.style.transform = `scale(${0.7 + 0.3 * pop(ramp(ms, at, 460))})`
+      })
+
+      // 3 — the call: the words, the button, a finger that comes up and presses it
+      const cta = $('cta')
+      cta.style.opacity = ramp(ms, GAMES_END + 150, 350)
+      cta.querySelector('h2').style.transform = `translateY(${(1 - pop(ramp(ms, GAMES_END + 150, 520))) * 80}px)`
+      const PRESS = 15900
+      const press = ramp(ms, PRESS, 130) * (1 - ramp(ms, PRESS + 170, 260))
+      const pulse = ms > PRESS + 500 ? 0.03 * Math.sin((ms - PRESS - 500) / 190) : 0
+      $('button').style.transform = `scale(${(0.5 + 0.5 * pop(ramp(ms, GAMES_END + 450, 520))) * (1 - 0.09 * press) + pulse})`
+      const reach = pop(ramp(ms, 15000, 800))
+      $('finger').style.transform = `translate(${(1 - reach) * 260}px, ${(1 - reach) * 330 - press * 26}px) rotate(-18deg)`
+      $('finger').style.opacity = ramp(ms, 15000, 260)
+      const ring = ramp(ms, PRESS + 120, 620)
+      $('ring').style.opacity = ring > 0 && ring < 1 ? 1 - ring : 0
+      $('ring').style.transform = `scale(${1 + 0.32 * ring})`
+      $('site').style.opacity = 0.92 * ramp(ms, GAMES_END + 900, 350)
+
+      return new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)))
+    }
+  </script>
+</body>
+</html>

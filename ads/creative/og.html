@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="space.css" />
+<style>
+  /* The picture of a link and of the image ad: 1200×630, or the page cover with ?cover (1640×624). */
+  html, body { width: 1200px; height: 630px; }
+  h1 { position: absolute; left: 76px; top: 168px; font-size: 118px; font-weight: 800; letter-spacing: -3px; line-height: 1; }
+  .tag { position: absolute; left: 80px; top: 316px; font-size: 40px; font-weight: 500; white-space: nowrap; }
+  html:not([lang='uk']) .tag { font-size: 36px; }
+  .pill {
+    position: absolute; left: 76px; top: 396px; height: 62px; padding: 0 32px; border-radius: 31px;
+    background: rgba(255, 255, 255, 0.2); border: 2px solid rgba(255, 255, 255, 0.3); font-size: 28px; line-height: 58px; white-space: nowrap;
+  }
+  #planet { position: absolute; left: 730px; top: 95px; }
+  body.cover, html.cover { width: 1640px; height: 624px; }
+  body.cover h1 { left: 440px; top: 150px; font-size: 104px; }
+  body.cover .tag { left: 444px; top: 282px; font-size: 36px; }
+  body.cover .pill { left: 440px; top: 352px; }
+  body.cover #planet { left: 1010px; top: 92px; }
+</style>
+</head>
+<body>
+  <h1>Pulsar Kids</h1>
+  <p class="tag" data-t="tagline"></p>
+  <div class="pill" data-t="audience"></div>
+  <div id="planet"></div>
+  <script src="space.js"></script>
+  <script src="texts.js"></script>
+  <script>
+    fillTexts()
+    const cover = new URLSearchParams(location.search).has('cover')
+    if (cover) { document.documentElement.classList.add('cover'); document.body.classList.add('cover') }
+    document.getElementById('planet').innerHTML = planet('440px')
+    sky({ dots: cover ? 190 : 150, sparks: cover ? 34 : 28, seed: 11, clear: cover ? [[25, 18, 62, 70]] : [[4, 22, 60, 78]] })
+    window.seek = () => Promise.resolve()
+  </script>
+</body>
+</html>

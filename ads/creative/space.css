@@ -1,0 +1,28 @@
+/* The look shared by every Pulsar Kids ad picture: a deep purple starry sky and the purple planet. */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { overflow: hidden; }
+body {
+  position: relative; color: #fff;
+  font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+  background:
+    radial-gradient(60% 55% at 72% 45%, rgba(168, 85, 247, 0.55), transparent 70%),
+    radial-gradient(50% 45% at 12% 90%, rgba(99, 102, 241, 0.35), transparent 72%),
+    linear-gradient(150deg, #1e0a45 0%, #3b1382 45%, #4c1d95 70%, #2e1065 100%);
+}
+.emoji { font-family: 'Apple Color Emoji', sans-serif; font-style: normal; line-height: 1; }
+
+.sky { position: absolute; inset: 0; pointer-events: none; }
+.sky i { position: absolute; }
+.sky .dot { border-radius: 50%; background: #fff; }
+.sky .spark { transform: translate(-50%, -50%); animation: twinkle 2600ms ease-in-out infinite alternate both; }
+@keyframes twinkle { from { opacity: 0.45; } to { opacity: 1; } }
+
+/* The planet: sized by --s; everything on it is measured in em of that size. */
+.planet { position: relative; width: var(--s); height: var(--s); font-size: var(--s); flex: none; }
+.planet .globe {
+  position: absolute; inset: 12%; border-radius: 50%; overflow: hidden;
+  background: radial-gradient(circle at 32% 26%, #d8c8ff 0%, #a37bf5 30%, #7b3fe0 62%, #4a1a9e 100%);
+  box-shadow: 0 0 0.16em rgba(196, 160, 255, 0.75), 0 0 0.42em rgba(147, 51, 234, 0.55), inset -0.06em -0.07em 0.16em rgba(30, 5, 80, 0.55);
+}
+.planet .globe b { position: absolute; background: rgba(233, 213, 255, 0.34); }
+.planet .emoji { position: absolute; transform: translate(-50%, -50%); filter: drop-shadow(0 0.012em 0.02em rgba(20, 0, 60, 0.45)); }

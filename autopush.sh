@@ -18,7 +18,9 @@ MSG="${1:-chore: auto update $(date '+%Y-%m-%d %H:%M:%S')}"
 # Commit identity (private account) applied per-command — never persisted,
 # so your global git config stays untouched.
 GIT_NAME="Yurii Luchyshyn"
-GIT_EMAIL="jurilochishin@gmail.com"
+# Private GitHub no-reply address — keeps your gmail out of the public commit
+# history while still linking commits to the yuriiluchyshyn account.
+GIT_EMAIL="8182389+yuriiluchyshyn@users.noreply.github.com"
 
 # GitHub account that OWNS the remotes. Pushes must authenticate as this
 # account (not whichever gh account happens to be "active" on the machine).
