@@ -6,6 +6,10 @@
 # commits with a timestamped message (authored as the owner's private account),
 # and pushes to the configured remote. Repos with no changes are left alone.
 #
+# A push of app/ is a deploy: Vercel rebuilds every project whose folder has
+# changed — the site (site/), the game (game/), the API (backend/) — with no
+# tests run first. To choose a part and have it checked, use ./scripts/deploy.sh.
+#
 # Usage:
 #   ./scripts/autopush.sh                 # default commit message
 #   ./scripts/autopush.sh "fix: wording"  # custom commit message
@@ -61,8 +65,19 @@ for repo in "${REPOS[@]}"; do
   echo "→  Зміни знайдено в $repo — коміт і пуш..."
   git add -A
   git -c user.name="$GIT_NAME" -c user.email="$GIT_EMAIL" commit -m "$MSG"
+  # What Vercel will rebuild — read off the commit just made (app/ only).
+  rebuilt=""
+  if [ "$repo" = "$ROOT/app" ]; then
+    files="$(git diff-tree --no-commit-id --name-only -r HEAD)"
+    shared=0
+    if echo "$files" | grep -qE '^(packages/|package(-lock)?\.json$)'; then shared=1; fi
+    if [ "$shared" -eq 1 ] || echo "$files" | grep -q '^site/'; then rebuilt="$rebuilt сайт"; fi
+    if [ "$shared" -eq 1 ] || echo "$files" | grep -q '^game/'; then rebuilt="$rebuilt гра"; fi
+    if echo "$files" | grep -q '^backend/'; then rebuilt="$rebuilt API"; fi
+  fi
   git "${PUSH_CRED[@]}" push
   echo "✅ Запушено: $repo"
+  if [ -n "$rebuilt" ]; then echo "🚀 Vercel перезбере:$rebuilt   (API: curl https://api.pulsarkids.com/api/health)"; fi
   pushed_any=1
 done
 
